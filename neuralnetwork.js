@@ -87,9 +87,6 @@ brain.runNetwork();
 function renderNetwork() {
     for (var x = 0; x < brain.network.length; x++) {
         for (var y = 0; y < brain.network[x].length; y++) {
-            if (brain.network[x][y].output >= 1) ctx.fillStyle = "#FF0000"
-            else ctx.fillStyle = "#0000FF"
-            ctx.fillRect(x * 40 + 10, y * 40 + 10, 10, 10);
             if (brain.network[x][y].inputs !== false) {
                 ctx.beginPath();
                 for (var i = 0; i < brain.network[x][y].inputs.length; i++) {
@@ -98,6 +95,15 @@ function renderNetwork() {
                     else ctx.strokeStyle = "#0000FF"
                     ctx.lineTo(x * 40 - 25, brain.network[x][y].inputs[i] * 40 + 15);
                 }
+                ctx.stroke();                
+            }
+            if (brain.network[x][y].output >= 1) ctx.fillStyle = "#FF0000"
+            else ctx.fillStyle = "#0000FF"
+            ctx.fillRect(x * 40 + 10, y * 40 + 10, 10, 10);
+            if (brain.network[x][y].bias != 0) {
+                ctx.beginPath();
+                ctx.strokeStyle = "#000000"
+                ctx.rect(x * 40 + 10, y * 40 + 10, 10, 10);
                 ctx.stroke();
             }
         }
