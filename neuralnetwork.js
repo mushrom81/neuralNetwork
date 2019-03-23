@@ -11,24 +11,24 @@ function f(x) {
 }
 
 class Node {
-    constructor(inputs, sign, layer, output, bias = 0) {
+    constructor(inputs, strength, layer, output, bias = 0) {
         this._layer = layer;
         this._inputs = inputs;
         this._output = output;
         this._bias = bias;
-        this._sign = sign;
+        this._strength = strength;
     }
 
     get output() { return this._output; }
     get inputs() { return this._inputs; }
     get bias() { return this._bias; }
-    get sign() { return this._sign; }
+    get strength() { return this._strength; }
 
     setOutput(manualinput = false) {
         if (manualinput === false) {
             var sum = this._bias;
             for (var i = 0; i < this._inputs.length; i++) {
-                sum += brain.network[this._layer - 1][this._inputs[i]].output * this._sign[i];
+                sum += brain.network[this._layer - 1][this._inputs[i]].output * this._strength[i];
             }
             this._output = f(sum);
         }
@@ -45,13 +45,13 @@ class Network {
 
     get network() { return this._network; }
 
-    addNode(inputs, sign, layer, biased, output = 0) {
+    addNode(inputs, strength, layer, biased, output = 0) {
         if (!this._network[layer]) {
             this._network[layer] = [];
             this._layers++;
         }
-        if (biased) this._network[layer].push(new Node(inputs, sign, layer, output, this._bias));
-        else this._network[layer].push(new Node(inputs, sign, layer, output));
+        if (biased) this._network[layer].push(new Node(inputs, strength, layer, output, this._bias));
+        else this._network[layer].push(new Node(inputs, strength, layer, output));
     }
 
     fireLayer(layer) {
@@ -88,14 +88,15 @@ function renderNetwork() {
     for (var x = 0; x < brain.network.length; x++) {
         for (var y = 0; y < brain.network[x].length; y++) {
             if (brain.network[x][y].inputs !== false) {
-                ctx.beginPath();
                 for (var i = 0; i < brain.network[x][y].inputs.length; i++) {
+                    ctx.beginPath();
                     ctx.moveTo(x * 40 + 15, y * 40 + 15);
-                    if (brain.network[x][y].sign[i] > 0) ctx.strokeStyle = "#FF0000"
+                    if (brain.network[x][y].strength[i] > 0) ctx.strokeStyle = "#FF0000"
                     else ctx.strokeStyle = "#0000FF"
+                    ctx.lineWidth = Math.abs(brain.network[x][y].strength[i]).toString();
                     ctx.lineTo(x * 40 - 25, brain.network[x][y].inputs[i] * 40 + 15);
-                }
-                ctx.stroke();                
+                    ctx.stroke();
+                }              
             }
             if (brain.network[x][y].output >= 1) ctx.fillStyle = "#FF0000"
             else ctx.fillStyle = "#0000FF"
@@ -103,6 +104,7 @@ function renderNetwork() {
             if (brain.network[x][y].bias != 0) {
                 ctx.beginPath();
                 ctx.strokeStyle = "#000000"
+                ctx.lineWidth = "1"
                 ctx.rect(x * 40 + 10, y * 40 + 10, 10, 10);
                 ctx.stroke();
             }
