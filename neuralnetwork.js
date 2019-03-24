@@ -43,13 +43,15 @@ class Network {
     }
 
     get network() { return this._network; }
+    get layers() { return this._layers; }
 
     addNode(inputs, strength, layer, bias, output = 0) {
         if (!this._network[layer]) {
             this._network[layer] = [];
-            this._layers++;
+            this._layers[layer] = 0;
         }
         this._network[layer].push(new Node(inputs, strength, layer, output, bias));
+        this._layers[layer]++;
     }
 
     fireLayer(layer) {
@@ -59,8 +61,7 @@ class Network {
     }
 
     runNetwork() {
-        if (this._layers <= 0) return;
-        for (var i = 1; i < this._layers; i++) this.fireLayer(i);
+        for (var i = 1; i < this._network.length; i++) this.fireLayer(i);
     }
 }
 brain = new Network();
