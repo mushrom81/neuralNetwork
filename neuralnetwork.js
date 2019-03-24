@@ -37,21 +37,19 @@ class Node {
 }
 
 class Network {
-    constructor(bias) {
+    constructor() {
         this._network = [];
-        this._bias = bias;
         this._layers = [];
     }
 
     get network() { return this._network; }
 
-    addNode(inputs, strength, layer, biased, output = 0) {
+    addNode(inputs, strength, layer, bias, output = 0) {
         if (!this._network[layer]) {
             this._network[layer] = [];
             this._layers++;
         }
-        if (biased) this._network[layer].push(new Node(inputs, strength, layer, output, this._bias));
-        else this._network[layer].push(new Node(inputs, strength, layer, output));
+        this._network[layer].push(new Node(inputs, strength, layer, output, bias));
     }
 
     fireLayer(layer) {
@@ -65,22 +63,22 @@ class Network {
         for (var i = 1; i < this._layers; i++) this.fireLayer(i);
     }
 }
-brain = new Network(-1);
+brain = new Network();
 
-brain.addNode(false, false, 0, false, -1);
-brain.addNode(false, false, 0, false, -1);
-brain.addNode(false, false, 0, false, 1);
-brain.addNode(false, false, 0, false, 1);
+brain.addNode(false, false, 0, 0, -1);
+brain.addNode(false, false, 0, 0, -1);
+brain.addNode(false, false, 0, 0, 1);
+brain.addNode(false, false, 0, 0, 1);
 
-brain.addNode([0, 1], [-1, -1], 1, true);
-brain.addNode([0, 1], [1, 1], 1, true);
-brain.addNode([2, 3], [-1, -1], 1, true);
-brain.addNode([2, 3], [1, 1], 1, true);
+brain.addNode([0, 1], [-1, -1], 1, -1);
+brain.addNode([0, 1], [1, 1], 1, -1);
+brain.addNode([2, 3], [-1, -1], 1, -1);
+brain.addNode([2, 3], [1, 1], 1, -1);
 
-brain.addNode([0, 3], [1, 1], 2, true);
-brain.addNode([1, 2], [1, 1], 2, true);
+brain.addNode([0, 3], [1, 1], 2, -1);
+brain.addNode([1, 2], [1, 1], 2, -1);
 
-brain.addNode([0, 1], [1, 1], 3, false);
+brain.addNode([0, 1], [1, 1], 3, 0);
 
 brain.runNetwork();
 
@@ -93,7 +91,7 @@ function renderNetwork() {
                     ctx.moveTo(x * 40 + 15, y * 40 + 15);
                     if (brain.network[x][y].strength[i] > 0) ctx.strokeStyle = "#FF0000"
                     else ctx.strokeStyle = "#0000FF"
-                    ctx.lineWidth = Math.abs(brain.network[x][y].strength[i]).toString();
+                    ctx.lineWidth = Math.abs(brain.network[x][y].strength[i] * 4).toString();
                     ctx.lineTo(x * 40 - 25, brain.network[x][y].inputs[i] * 40 + 15);
                     ctx.stroke();
                 }              
@@ -104,7 +102,7 @@ function renderNetwork() {
             if (brain.network[x][y].bias != 0) {
                 ctx.beginPath();
                 ctx.strokeStyle = "#000000"
-                ctx.lineWidth = "1"
+                ctx.lineWidth = "2"
                 ctx.rect(x * 40 + 10, y * 40 + 10, 10, 10);
                 ctx.stroke();
             }
